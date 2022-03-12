@@ -1,20 +1,48 @@
 import { useEffect, useState } from 'react';
 
-export function App() {
+const HeadersSchema = [
+	{
+		name: 'userId',
+		order: 88,
+	},
+	{
+		name: 'id',
+		order: 6,
+	},
+	{
+		name: 'title',
+		order: 2,
+	},
+	{
+		name: 'completed',
+		order: 9,
+	},
+];
 
+export function App() {
 	const [Data, setData] = useState([]);
 	const [TableHeaders, setTableHeaders] = useState([]);
+	console.log(TableHeaders); //(4) ["userId", "id", "title", "completed"]
 
   useEffect(() => {
+    
+		const fetchData = async () => {
+			const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+			const json = await response.json();
+			const TableHeaders = [];
 
-    const fetchData = async () => {
-      const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-      const json = await response.json();
-      setData(json);
-      setTableHeaders(Object.keys(json[0]));
-    }
+			Object.keys(json[0]).forEach(Key => {
+				HeadersSchema.forEach(Header => {
+					if (Header.name === Key) {
+						TableHeaders[Header.order] = Key;
+					}
+				});
+			});
 
-    fetchData();
+			setTableHeaders(TableHeaders.filter(Header => Header));
+			setData(json);
+		};
+		fetchData();
 	}, []);
 
 	return (
